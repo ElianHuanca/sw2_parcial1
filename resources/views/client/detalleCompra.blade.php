@@ -22,6 +22,7 @@
                                             <h3>{{ $producto->Nombre }}</h3>
                                             <p><strong>Precio:</strong> {{ $producto->Precio }} Bs</p>
                                             <p><strong>Cantidad:</strong> {{ $producto->Cantidad }}</p>
+                                            <p><strong>Subtotal:</strong> {{ $producto->Precio * $producto->Cantidad }} Bs</p>
                                         </div>
                                         <div class="product-image">
                                             <img src="{{ $producto->Url }}" alt="{{ $producto->Nombre }}"

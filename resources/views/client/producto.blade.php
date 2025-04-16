@@ -13,7 +13,7 @@
         @foreach ($productos as $producto)
             <li class="product" data-categoria="{{ $producto->idCategoria }}">
                 <div class="product-image">
-                    <img src="{{ $producto->Url }}" alt="{{ $producto->Nombre }}">
+                    <img src="{{ asset($producto->Url) }}" alt="{{ $producto->Nombre }}">
                 </div>
                 <h2 class="product-title">{{ $producto->Nombre }}</h2>
                 <div class="product-info">
