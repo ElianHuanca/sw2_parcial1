@@ -2,25 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Detalleventa;
 use App\Models\Notaventa;
-use App\Models\Producto;
 use App\Models\Usuario;
+use App\Services\NotaVentaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-use function PHPUnit\Framework\isEmpty;
-
 class NotaVentaController extends Controller
 {
+    protected $notaVentaService;
+
+    public function __construct(NotaVentaService $notaVentaService)
+    {
+        $this->notaVentaService = $notaVentaService;
+    }
     public function index()
     {
         if (Auth::user()->rol === 'cliente') {
             $idUsuario = Auth::user()->id;
             $notaventas = Notaventa::where('idUsuario', $idUsuario)->get();
             return view('client.compras', compact('notaventas'));
-        }else{
+        } else {
             $notaventas = Notaventa::all();
             return view('notaventa.index', compact('notaventas'));
         }
@@ -35,31 +38,21 @@ class NotaVentaController extends Controller
 
     public function store(Request $request)
     {
-        $cartItems  = json_decode($request->input('cartList'), true);
+        $cartItems = json_decode($request->input('cartList'), true);
+
         if (is_array($cartItems) && !empty($cartItems)) {
-            $idUsuario = Auth::user()->id;
-            $notaventa = new Notaventa();                     
-            $notaventa->Fecha = date('Y-m-d'); 
-            $notaventa->Montototal = $request->input('total');
-            $notaventa->idUsuario = $idUsuario;
-            $notaventa->save();
-            foreach ($cartItems as $item) {
-                $detalleventa = new Detalleventa();
-                $detalleventa->Cantidad = $item['cantidad'];
-                $detalleventa->idProducto = $item['id'];
-                $detalleventa->idNotaventa = $notaventa->id;
-                $detalleventa->save();
-                $producto = Producto::find($item['id']); // Obtener el producto por su ID
-                if ($producto) {
-                    $producto->Stock = $producto->Stock - $item['cantidad'];
-                    $producto->save(); // Actualizar el stock del producto
-                }
-            }
-            return redirect()->route('notaventa.show', $notaventa)->with('success', 'Nota de venta creada exitosamente.');
-            //return redirect()->route('notaventa.index')->with('success', 'Nota de venta creada exitosamente.');
+            $idUsuario = Auth::id();
+            
+            $notaventa = $this->notaVentaService->crearNotaVenta($cartItems, $request->input('total'), $idUsuario);
+
+            return redirect()
+                ->route('notaventa.show', $notaventa)
+                ->with('success', 'Nota de venta creada exitosamente.');
         }
-        //dd("No paso por el if");
+
+        return back()->withErrors(['cartList' => 'Carrito vacío o inválido']);
     }
+
 
     public function show($id)
     {
@@ -70,12 +63,12 @@ class NotaVentaController extends Controller
             ->where('Detalleventa.idNotaventa', $notaventa->id)
             ->select('Producto.Nombre', 'Producto.Precio', 'Producto.Url', 'Detalleventa.Cantidad')
             ->get();
-        
+
         if (Auth::user()->rol === 'cliente') {
-            return view('client.detalleCompra', compact('notaventa', 'productos'));    
-        }else{
-            return view('notaventa.show', compact('notaventa','productos'));
-        }            
+            return view('client.detalleCompra', compact('notaventa', 'productos'));
+        } else {
+            return view('notaventa.show', compact('notaventa', 'productos'));
+        }
     }
 
     public function edit($id)

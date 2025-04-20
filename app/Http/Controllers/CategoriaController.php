@@ -2,11 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\CategoriaService;
 use App\Models\Categoria;
 use Illuminate\Http\Request;
 
 class CategoriaController extends Controller
 {
+
+    protected $categoriaService;
+
+    public function __construct(CategoriaService $categoriaService)
+    {
+        $this->categoriaService = $categoriaService;
+    }
+
     public function index()
     {
         $categorias = Categoria::all();
@@ -21,11 +30,10 @@ class CategoriaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'Nombre' => 'required',
-            //'CategoriaID' => 'required',
+            'Nombre' => 'required',            
         ]);
 
-        Categoria::create($request->all());
+        $this->categoriaService->crear($request->only('Nombre'));
 
         return redirect()->route('categorias.index')
             ->with('success', 'Categoría creada exitosamente.');

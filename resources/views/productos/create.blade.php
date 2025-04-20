@@ -17,11 +17,17 @@
                         <div class="col-md-6">
                             <label for="Nombre">Nombre:</label>
                             <input type="text" name="Nombre" id="Nombre" class="form-control">
+                            @error('Nombre')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="col-md-6">
                             <label for="Precio">Precio:</label>
                             <input type="text" name="Precio" id="Precio" class="form-control">
+                            @error('Precio')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                 </div>
@@ -32,10 +38,16 @@
                         <div class="col-md-6">
                             <label for="Stock">Stock:</label>
                             <input type="text" name="Stock" id="Stock" class="form-control">
+                            @error('Stock')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="col-md-6">
                             <label for="Url">Subir Imagen:</label>
                             <input type="file" name="Url" id="Url" class="form-control">
+                            @error('Url')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                 </div>

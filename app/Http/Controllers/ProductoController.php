@@ -4,12 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Categoria;
 use App\Models\Producto;
+use App\Services\ProductoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class ProductoController extends Controller
-{    
+{
+    protected $productoService;
+
+    public function __construct(ProductoService $productoService)
+    {
+        $this->productoService = $productoService;
+    }
 
     public function index()
     {
@@ -31,28 +38,39 @@ class ProductoController extends Controller
 
     public function store(Request $request)
     {
-        //dd($request->Url);
-
         $request->validate([
             'Nombre' => 'required',
             'Precio' => 'required',
-            'Url' => 'required',
+            //'Url' => 'required',
+            'Url' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'Stock' => 'required',
             'idCategoria' => 'required',
         ]);
 
-        $path = $request->file('Url')->store("productos", 's3');
-        $url = Storage::disk('s3')->url($path);
-        $producto = new Producto();
-        $producto->Nombre = $request->Nombre;
-        $producto->Precio = $request->Precio;
-        $producto->idCategoria = $request->idCategoria;
-        $producto->Url = $url;
-        $producto->Stock = $request->Stock;
-        $producto->save();
+        $filePath = null;
+
+        if ($request->hasFile('Url')) {
+            $file = $request->file('Url');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('assets'), $filename);
+            $filePath = '../assets/' . $filename;
+        }
+
+        $data = [
+            'Nombre' => $request->Nombre,
+            'Precio' => $request->Precio,
+            'Stock' => $request->Stock,
+            'idCategoria' => $request->idCategoria,
+            //'Url' => $request->Url,
+            'Url' => $filePath,
+        ];
+
+        $this->productoService->crear($data);
+
         return redirect()->route('productos.index')
             ->with('success', 'Producto creado exitosamente.');
     }
+
 
     public function edit($id)
     {
