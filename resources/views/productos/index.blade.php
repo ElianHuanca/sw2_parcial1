@@ -7,6 +7,11 @@
 @stop
 
 @section('content')
+    @if (session('success'))
+        <div id="alerta-success" class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
     {{-- <div class="card">
         <div class="card-header">
             <h3 class="card-title">Gestión de Productos</h3>
@@ -60,7 +65,7 @@
                 <h2 class="product-title">{{ $producto->Nombre }}</h2>
                 <div class="product-info">
                     <p class="product-price">{{ $producto->Precio }} Bs</p>
-                    <p class="product-stock">Stock: {{ $producto->Stock }}</p>                    
+                    <p class="product-stock">Stock: {{ $producto->Stock }}</p>
                     <a href="{{ route('productos.edit', $producto->id) }}" class="btn btn-primary">Editar</a>
                     <form method="POST" action="{{ route('productos.destroy', $producto->id) }}" style="display: inline;">
                         @csrf

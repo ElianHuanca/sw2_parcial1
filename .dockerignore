@@ -1,0 +1,8 @@
+.env
+script.sql
+scriptGenerado.txt
+LinksYCode.txt
+node_modules
+vendor
+scriptsInput
+.git

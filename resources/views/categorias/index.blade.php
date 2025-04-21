@@ -7,6 +7,12 @@
 @stop
 
 @section('content')
+    @if (session('success'))
+        <div id="alerta-success" class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">Lista de Categorías</h5>
@@ -19,13 +25,14 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($categorias as $categoria)
+                    @foreach ($categorias as $categoria)
                         <tr>
                             <td>{{ $categoria->id }}</td>
                             <td>{{ $categoria->Nombre }}</td>
                             <td>
                                 <a href="{{ route('categorias.edit', $categoria->id) }}" class="btn btn-primary">Editar</a>
-                                <form action="{{ route('categorias.destroy', $categoria->id) }}" method="POST" style="display: inline;">
+                                <form action="{{ route('categorias.destroy', $categoria->id) }}" method="POST"
+                                    style="display: inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger">Eliminar</button>
@@ -44,5 +51,7 @@
 @stop
 
 @section('js')
-    <script> console.log('Hi!'); </script>
+    <script>
+        console.log('Hi!');
+    </script>
 @stop
