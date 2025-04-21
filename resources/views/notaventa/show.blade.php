@@ -18,6 +18,7 @@
                     <th>Nombre del Producto</th>
                     <th>Precio (Bs)</th>
                     <th>Cantidad Vendida</th>
+                    <th>Sub Total</th>
                 </tr>
             </thead>
             <tbody>
@@ -26,6 +27,7 @@
                         <td>{{ $producto->Nombre }}</td>
                         <td>{{ $producto->Precio }}</td>
                         <td>{{ $producto->Cantidad }}</td>
+                        <td>{{ $producto->Precio * $producto->Cantidad }}</td>
                     </tr>
                 @endforeach
             </tbody>
